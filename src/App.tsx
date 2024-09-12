@@ -1,9 +1,12 @@
-import { Button } from "@/components/ui/button";
+import { ThemeProvider } from "next-themes";
+import { SidebarUi } from "./components/sidebar-ui";
 
-export default function Home() {
+function App() {
   return (
-    <div>
-      <Button>Click me</Button>
-    </div>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <SidebarUi />
+    </ThemeProvider>
   );
 }
+
+export default App;
