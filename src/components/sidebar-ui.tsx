@@ -15,14 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/hooks/use-toast";
 import {
   ArrowDown,
   ArrowUp,
@@ -58,6 +57,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { createElement, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface ServerData {
   label: string;
@@ -121,7 +121,6 @@ export function SidebarUi() {
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
 
   useEffect(() => {
     localStorage.setItem("sidebarServers", JSON.stringify(servers));
@@ -130,8 +129,7 @@ export function SidebarUi() {
   const handleAddServer = (newServer: ServerData) => {
     setServers([...servers, newServer]);
     setIsAddingServer(false);
-    toast({
-      title: "Server Added",
+    toast.success("Server Added", {
       description: `${newServer.label} has been added successfully.`,
     });
   };
@@ -142,8 +140,7 @@ export function SidebarUi() {
     );
     setEditingServerIndex(null);
     setSelectedServerIndex(index);
-    toast({
-      title: "Server Updated",
+    toast.success("Server Updated", {
       description: `${updatedServer.label} has been updated successfully.`,
     });
   };
@@ -153,10 +150,8 @@ export function SidebarUi() {
     setServers(servers.filter((_, i) => i !== index));
     setEditingServerIndex(null);
     setSelectedServerIndex(null);
-    toast({
-      title: "Server Removed",
+    toast.success("Server Removed", {
       description: `${deletedServer.label} has been removed.`,
-      variant: "destructive",
     });
   };
 
@@ -180,15 +175,12 @@ export function SidebarUi() {
         try {
           const importedServers = JSON.parse(e.target?.result as string);
           setServers(importedServers);
-          toast({
-            title: "Success",
+          toast.success("Import Successful", {
             description: "Servers imported successfully",
           });
         } catch {
-          toast({
-            title: "Error",
+          toast.error("Import Failed", {
             description: "Error importing servers",
-            variant: "destructive",
           });
         }
       };
@@ -209,15 +201,12 @@ export function SidebarUi() {
         try {
           const importedServers = JSON.parse(e.target?.result as string);
           setServers(importedServers);
-          toast({
-            title: "Success",
+          toast.success("Import Successful", {
             description: "Servers imported successfully",
           });
         } catch {
-          toast({
-            title: "Error",
+          toast.error("Import Failed", {
             description: "Error importing servers",
-            variant: "destructive",
           });
         }
       };
@@ -436,15 +425,31 @@ export function SidebarUi() {
                 <p className="mt-2">Select a server from the sidebar</p>
               ) : (
                 <div className="mt-2 flex flex-col items-center">
-                  <p>No servers added yet</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsAddingServer(true)}
-                    className="mt-2"
-                  >
-                    Add your first server
-                  </Button>
+                  <div className="mt-2 flex gap-2 items-center">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsAddingServer(true)}
+                    >
+                      Add your first server
+                    </Button>
+                    <span>or</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        handleAddServer({
+                          label: "Demo",
+                          url: "https://demo.easypanel.io",
+                          icon: "Globe",
+                          color: "#059669",
+                        });
+                        setSelectedServerIndex(0);
+                      }}
+                    >
+                      Add demo server
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -479,7 +484,7 @@ export function SidebarUi() {
             )}
           </DialogContent>
         </Dialog>
-        <Toaster />
+        <Toaster position="bottom-center" />
       </div>
     </TooltipProvider>
   );
@@ -500,7 +505,6 @@ function ServerForm({
   onMoveUp,
   onMoveDown,
 }: ServerFormProps) {
-  const { toast } = useToast();
   const [formData, setFormData] = useState<ServerData>(
     initialData || {
       label: "",
@@ -524,10 +528,8 @@ function ServerForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.url.startsWith("https://")) {
-      toast({
-        title: "Error",
+      toast.error("Invalid URL", {
         description: "URL must start with https://",
-        variant: "destructive",
       });
       return;
     }
