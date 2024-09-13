@@ -121,6 +121,28 @@ export function SidebarUi() {
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
+  const [formData, setFormData] = useState<ServerData>({
+    label: "",
+    url: "",
+    icon: null,
+    color: defaultColor,
+  });
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const url = searchParams.get("url");
+    const label = searchParams.get("label");
+
+    if (url) {
+      setIsAddingServer(true);
+      setFormData({
+        label: label || "",
+        url: url,
+        icon: null,
+        color: defaultColor,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("sidebarServers", JSON.stringify(servers));
@@ -257,7 +279,7 @@ export function SidebarUi() {
               <DialogHeader>
                 <DialogTitle>Add New Server</DialogTitle>
               </DialogHeader>
-              <ServerForm onSubmit={handleAddServer} />
+              <ServerForm onSubmit={handleAddServer} initialData={formData} />
             </DialogContent>
           </Dialog>
 
