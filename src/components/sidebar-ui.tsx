@@ -285,63 +285,77 @@ export function SidebarUi() {
 
           <div className="flex-1 overflow-y-auto w-full py-2 px-3">
             {servers.map((server, index) => (
-              <div
-                key={server.label}
-                className="relative flex justify-center mb-2"
+              <a
+                href={server.url}
+                target="_blank"
+                onClick={(e) => {
+                  if (!e.metaKey) {
+                    e.preventDefault();
+                  }
+                }}
               >
-                <Tooltip>
-                  <TooltipTrigger asChild>
+                <div
+                  key={server.label}
+                  className="relative flex justify-center mb-2"
+                >
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={
+                          selectedServerIndex === index ? "default" : "outline"
+                        }
+                        size="icon"
+                        className={`w-10 h-10 ${
+                          selectedServerIndex === index ? "border-2" : ""
+                        }`}
+                        onClick={(e) => {
+                          if (!e.metaKey) {
+                            setSelectedServerIndex(index);
+                          }
+                        }}
+                        style={{
+                          backgroundColor:
+                            selectedServerIndex === index
+                              ? server.color
+                              : "transparent",
+                          color:
+                            selectedServerIndex === index
+                              ? "white"
+                              : server.color,
+                          borderColor:
+                            selectedServerIndex === index
+                              ? server.color
+                              : undefined,
+                        }}
+                      >
+                        {server.icon === null ? (
+                          <span className="text-lg font-bold">
+                            {server.label.slice(0, 2).toUpperCase()}
+                          </span>
+                        ) : (
+                          predefinedLucideIcons[server.icon] &&
+                          createElement(predefinedLucideIcons[server.icon], {
+                            className: "w-5 h-5",
+                          })
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p>{server.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {selectedServerIndex === index && (
                     <Button
-                      variant={
-                        selectedServerIndex === index ? "default" : "outline"
-                      }
+                      variant="outline"
                       size="icon"
-                      className={`w-10 h-10 ${
-                        selectedServerIndex === index ? "border-2" : ""
-                      }`}
-                      onClick={() => setSelectedServerIndex(index)}
-                      style={{
-                        backgroundColor:
-                          selectedServerIndex === index
-                            ? server.color
-                            : "transparent",
-                        color:
-                          selectedServerIndex === index
-                            ? "white"
-                            : server.color,
-                        borderColor:
-                          selectedServerIndex === index
-                            ? server.color
-                            : undefined,
-                      }}
+                      className="absolute -top-1 -right-1 w-5 h-5 rounded-full"
+                      onClick={() => setEditingServerIndex(index)}
                     >
-                      {server.icon === null ? (
-                        <span className="text-lg font-bold">
-                          {server.label.slice(0, 2).toUpperCase()}
-                        </span>
-                      ) : (
-                        predefinedLucideIcons[server.icon] &&
-                        createElement(predefinedLucideIcons[server.icon], {
-                          className: "w-5 h-5",
-                        })
-                      )}
+                      <Edit2 className="h-3 w-3" />
                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{server.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-                {selectedServerIndex === index && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute -top-1 -right-1 w-5 h-5 rounded-full"
-                    onClick={() => setEditingServerIndex(index)}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
+                  )}
+                </div>
+              </a>
             ))}
           </div>
 
